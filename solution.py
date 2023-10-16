@@ -3,7 +3,7 @@ import requests
 import json
 from requests import Response
 
-f = open('output.txt', 'a')
+f = open('output.txt', 'a', encoding='utf_8')
 out = open('page.txt', 'w')
 search = input().strip()
 card_url = 'https://www.lamoda.ru/p/'
@@ -18,7 +18,7 @@ page = response.text
 idx = page.find('"products"')
 new_page = page[idx:]
 idxe = new_page.find('"products_meta"')
-out.write(page[idx:idxe + idx])
+
 
 # print(page[idx:idxe+idx])
 len(page)
@@ -26,7 +26,7 @@ len(page)
 pagination = page.find('"pagination"')
 pagitation_dict = page[pagination + 13:pagination + page[pagination:].find('}') + 1]
 print(pagitation_dict)
-f.write(pagitation_dict)
+
 page_c = page
 
 num_pages = json.loads(pagitation_dict)['pages']
@@ -50,10 +50,13 @@ def get_artikules(page):
 def get_name(page):
     if page.find('x-premium-product-title-new__model-name"') != -1:
         idx = page.find('x-premium-product-title-new__model-name"')
-        print(idx)
         end = page[idx:].find('</div>')
         name = page[idx:idx+end]
         return name[41:]
+    elif page.find('"x-premium-product-title__model-name"') != -1:
+        idx = page.find('"x-premium-product-title__model-name"')
+        end = page[idx:].find('</div>')
+        return page[idx+38:idx+end]
 
 def get_dicount(page):
     if page.find('"discount_lamoda_amount"') != -1:
@@ -108,6 +111,7 @@ for page in range(1, num_pages + 1):
     for artikul in artikules:
         url_product = f'https://www.lamoda.ru/p/{artikul}'
         page_product = requests.get(url_product).text
-        product = f'{artikul} {get_name(page_product)} {get_brand(page_product)} {get_country(page_product)} {get_price(page_product)} {get_dicount(page_product)}'
+        product = f'{artikul} {get_name(page_product)} {get_brand(page_product)} {get_country(page_product)} {get_price(page_product)} {get_dicount(page_product)}\n'
+
         f.write(product)
 
