@@ -3,7 +3,7 @@ import requests
 import json
 from requests import Response
 
-f = open('output.txt', 'w')
+f = open('output.txt', 'a')
 out = open('page.txt', 'w')
 search = input().strip()
 card_url = 'https://www.lamoda.ru/p/'
@@ -48,29 +48,66 @@ def get_artikules(page):
 
 
 def get_name(page):
-    name_list = []
-    while True:
-        if page.find("name") != -1:
-            idx = page.find("name")
-            sign = page.find('",')
-            name = page[idx:sign].split(':')
-            name = name[1]
-            if name != [''] and name[1][1:] not in name_list:
-                name_list.append(name[1][1:])
-        else:
-            break
-    return name_list
+    if page.find('x-premium-product-title-new__model-name"') != -1:
+        idx = page.find('x-premium-product-title-new__model-name"')
+        print(idx)
+        end = page[idx:].find('</div>')
+        name = page[idx:idx+end]
+        return name[41:]
+
+def get_dicount(page):
+    if page.find('"discount_lamoda_amount"') != -1:
+        idx = page.find('"discount_lamoda_amount"')
+        discount = page[idx-10:idx]
+        start = discount.find(':')
+        end = discount.find(',')
+        return discount[start+1:end]
+    else:
+        return 0
+
+def get_brand(page):
+    if page.find('"Бренд"') != -1:
+        idx = page.find('"Бренд"')
+        end = page[idx:].find('/",')
+        brand = page[idx: idx+end]
+    return brand[brand.find("-")+1:]
+
+def get_country(page):
+    idx = page.find('"Страна производства"')
+    if idx != -1:
+        country = page[idx:idx+100]
+        start = country.find('"value"')
+        country = country[start:]
+        country = country[9:]
+        end = country.find('"')
+        return country[:end]
 
 
+def get_price(page):
+    idx = page.find('"priceCurrency"')
+    if idx != -1:
+        price = page[idx:idx+50]
+        start = price.find('"price": "')
+        end = price.find('.')
+        price = price[start+10:end]
+        return price
 
-for page in range(num_pages):
+'''
+ur = 'https://www.lamoda.ru/p/mp002xw0m66b'
+page_product = requests.get(ur).text
+
+price = get_price(page_product)
+print(price)
+'''
+
+for page in range(1, num_pages + 1):
     payload['page'] = page
     response = requests.get(url, params=payload)
     page = response.text
-    arlikules = get_artikules(page)
+    artikules = get_artikules(page)
+    for artikul in artikules:
+        url_product = f'https://www.lamoda.ru/p/{artikul}'
+        page_product = requests.get(url_product).text
+        product = f'{artikul} {get_name(page_product)} {get_brand(page_product)} {get_country(page_product)} {get_price(page_product)} {get_dicount(page_product)}'
+        f.write(product)
 
-    for arlikul in arlikules:
-        url_product = f'https://www.lamoda.ru/p/{arlikul}'
-        names = get_name(page)
-        print(names)
-        
