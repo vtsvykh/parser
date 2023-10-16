@@ -1,10 +1,10 @@
-'''
+"""
 Case 2
 Group:
 Uchanov Igor       80%
 Fishchukova Sofia  45%
 Tsvykh Viktoria    50%
-'''
+"""
 
 import requests
 import json
@@ -96,7 +96,8 @@ def get_price(page):
 
 
 def get_product_info(page, artikul):
-    return f'{artikul} {get_name(page_product)} {get_brand(page_product)} {get_country(page_product)} {get_price(page_product)} {get_dicount(page_product)}\n'
+    return (f'{artikul} {get_name(page_product)} {get_brand(page_product)} {get_country(page_product)} '
+            f'{get_price(page_product)} {get_dicount(page_product)}\n')
 
 
 for page in range(1, num_pages + 1):
