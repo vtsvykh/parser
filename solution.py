@@ -9,6 +9,8 @@ card_url = 'https://www.lamoda.ru/p/'
 payload = {'q': search, 'sort': 'price_asc', 'page': 1} 
 #url = f'https://www.lamoda.ru/catalogsearch/result/?q={input().replace(" ","+")}&sort=price_asc'
 url = 'https://www.lamoda.ru/catalogsearch/result'
+
+#классный запрос, всего 7 товаров, легко отлаживать
 #носки зеленые мужские adidas
 
 response = requests.get(url, params=payload)
@@ -17,7 +19,7 @@ page = response.text
 idx = page.find('"products"')
 new_page = page[idx:]
 idxe = new_page.find('"products_meta"')
-out.write(page[idx:idxe+idx])
+# out.write(page[idx:idxe+idx])
 
 # print(page[idx:idxe+idx])
 len(page)
@@ -53,6 +55,9 @@ for page in range(num_pages):
 	for arlikul in arlikules:
 		url_product = f'https://www.lamoda.ru/p/{arlikul}'
 		print(url_product)
-		#TODO: сюда добалять код чтобы доставать артикул, наименование, бренд, цена, скидка %, страна производитель
-
-
+		page_product = requests.get(url).text
+		#out.write(page_product)
+		#TODO: сюда добалять код чтобы доставать наименование, бренд, цена, скидка %, страна производитель
+ur = 'https://www.lamoda.ru/p/RTLACV944401'
+page_product = requests.get(ur).text
+out.write(page_product)
