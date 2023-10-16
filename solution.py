@@ -48,7 +48,11 @@ def get_artikules(page):
 	return article_list
 
 
+
+
+
 for page in range(num_pages):
+	payload['page'] = page
 	response = requests.get(url, params=payload)
 	page = response.text
 	arlikules = get_artikules(page)
